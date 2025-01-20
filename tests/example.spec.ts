@@ -44,5 +44,7 @@ test("works when set offline after startup", async ({ page, context }) => {
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Playwright/);
 
-  // await context.setOffline(true);
+  await context.setOffline(true);
+
+  await page.getByRole("link", { name: "Get Started" }).click();
 });
