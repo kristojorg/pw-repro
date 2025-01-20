@@ -10,11 +10,25 @@ test("works in online mode", async ({ page }) => {
   await expect(page.getByText("Hello from routed page")).toBeVisible();
 });
 
+test("works offline when immediately setting browser to offline", async ({
+  page,
+  context,
+}) => {
+  await page.route("http://localhost:3000", (route) => {
+    return route.fulfill({ body: "<div>Hello from routed page</div>" });
+  });
+  await context.setOffline(true);
+  await page.goto("http://localhost:3000");
+
+  // Expect a title "to contain" a substring.
+  await expect(page.getByText("Hello from routed page")).toBeVisible();
+});
+
 test("works in offline mode", async ({ page, context }) => {
   await page.route("http://localhost:3000", (route) => {
     return route.fulfill({ body: "<div>Hello from routed page</div>" });
   });
-  const listener = page.addListener("load", async () => {
+  page.addListener("load", async () => {
     await context.setOffline(true);
   });
   await page.goto("http://localhost:3000");
